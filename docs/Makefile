@@ -15,7 +15,7 @@ help: setup
 
 setup:
 	python3 -m venv venv && \
-		source ./venv/bin/activate && \
+		. ./venv/bin/activate && \
 		pip install sphinx && \
 		pip install sphinx_rtd_theme && \
 		pip install sphinx-design && \
@@ -25,4 +25,4 @@ setup:
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	@source ./venv/bin/activate && $(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@. ./venv/bin/activate && $(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
