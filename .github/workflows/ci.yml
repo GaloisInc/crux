@@ -171,7 +171,6 @@ jobs:
             mkdir -p docs/_build
             mv ${tgt}/docs/_build/html docs/_build/$(basename ${tgt})
           done
-          cp docs/index.html docs/_build/index.html
       - name: upload pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
