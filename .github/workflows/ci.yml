@@ -4,7 +4,7 @@ on:
     tags:
       - "[0-9]+.[0-9]+"
       - "[0-9]+.[0-9]+.[0-9]+"
-    branches: [master, "release-**"]
+    branches: [main, "release-**"]
   pull_request:
   workflow_dispatch:
 
@@ -34,7 +34,7 @@ jobs:
           make html
   build-pages-docs:
     # Do not run this on forks. It isn't sufficient to check the pull
-    # request info because we might also be on master in a fork. It
+    # request info because we might also be on `main` in a fork. It
     # seems that you can't stop scheduled jobs from also running in
     # forks. See https://github.com/orgs/community/discussions/16109.
     if: github.event.pull_request.head.repo.fork == false &&
@@ -42,7 +42,7 @@ jobs:
         github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     # The public interface should then allow the user to browse the
-    # documentation at the master branch, but also the documentation associated
+    # documentation at the `main` branch, but also the documentation associated
     # with each pull request and each tag (where a tag typically represents a
     # released version).
     #
@@ -74,7 +74,7 @@ jobs:
       # TGTBASE is used below as the working location to checkout and generate
       # documentation.  Can be changed for convenience.
       TGTBASE: docs/ci_build_out
-      REFREPO: docs/ci_build_out/master
+      REFREPO: docs/ci_build_out/main
     steps:
       - uses: actions/checkout@v5
         with:
@@ -146,7 +146,7 @@ jobs:
               rm -rf ${tgt}
             fi
           done
-          git -C ${REFREPO} switch --discard-changes master
+          git -C ${REFREPO} switch --discard-changes main
       - name: sphinx version config for each doc directory
         shell: bash
         run: |
