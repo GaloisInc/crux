@@ -82,7 +82,7 @@ jobs:
           fetch-depth: 0
       - name: Install `jq`
         shell: bash
-        run: apt install -y jq
+        run: sudo apt update && sudo apt-get install -y jq
       - name: tags and pull requests
         shell: bash
         run: |
