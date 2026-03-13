@@ -153,7 +153,7 @@ jobs:
           topdir=$(pwd)
           for tgt in ${TGTBASE}/* ; do
             echo "Setting config in ${tgt}"
-            (cd ${tgt}/docs
+            (cd ${tgt}/docs &&
              python3 -- ${topdir}/.github/gen_html_context.py ${{ github.repository }} $(basename ${tgt}) >> conf.py
             )
           done
@@ -163,10 +163,10 @@ jobs:
         # error message placeholder for that set.
         run: |
           for tgt in ${TGTBASE}/* ; do
-            (cd ${tgt}/docs;
-             echo Building HTML docs in ${tgt}/docs
-             make setup && make html || (
-             echo "Unable to generate documentation for this release" > ${tgt}/docs/_build/html/index.html
+            (cd ${tgt}/docs
+             echo "Building HTML docs in ${tgt}/docs"
+             make setup && make html ||
+               echo "Unable to generate documentation for this release" > ${tgt}/docs/_build/html/index.html
             )
             mkdir -p docs/_build
             mv ${tgt}/docs/_build/html docs/_build/$(basename ${tgt})
