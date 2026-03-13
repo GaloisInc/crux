@@ -12,8 +12,8 @@ import sphinx_rtd_theme
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Crux'
-copyright = '2026, Crux Team'
-author = 'Crux Team'
+copyright = '2026, Galois Inc'
+author = 'Galois Inc'
 release = '1.0'
 
 # -- General configuration ---------------------------------------------------
