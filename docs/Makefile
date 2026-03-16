@@ -22,13 +22,13 @@ setup:
 		pip install sphinx_rtd_theme && \
 		pip install sphinx-design && \
 		pip install sphinx_copybutton && \
-		cd "$(MIR_JSON)" && cargo build --release
+		cd "$(MIR_JSON)" && cargo build
 		
 rust-docs:
 	HERE="$$PWD" && D="$$HERE/$(BUILDDIR)/rust-docs" && \
 	mkdir -p "$$D" && \
 	cd "$(MIR_JSON)" && \
-	./target/release/mir-json-translate-libs --docs --out-dir "$$D" && \
+	cargo run --bin mir-json-translate-libs -- --docs --out-dir "$$D" && \
 	cd "$$HERE" && cp -r "$$D/rlibs/doc" "$(RUSTDOCS)" && rm -rf "$$D"
 
 # Catch-all target: route all unknown targets to Sphinx using the new

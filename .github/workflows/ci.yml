@@ -112,6 +112,7 @@ jobs:
           # github workflows; use an https reference instead:
           git -c protocol.version=2 clone ${{ github.server_url }}/${{ github.repository }} ${REFREPO}
           git -C ${REFREPO} fetch --all
+          git -C ${REFREPO} submodule update --init
           for X in $(seq 0 $(( $(cat pulls.json | jq -- length) - 1))) ; do
             echo Handling Pull Request number ${X}
             prnum=$(cat pulls.json | jq -- .[${X}].number)
