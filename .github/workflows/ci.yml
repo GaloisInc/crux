@@ -15,6 +15,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+
+  setup-rust:
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
   # There are two jobs: building docs for this branch, and then
   # building a full set of docs for and update the public interface.
   build-branch-docs:
