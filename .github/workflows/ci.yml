@@ -16,9 +16,6 @@ concurrency:
 
 jobs:
 
-  setup-rust:
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
   # There are two jobs: building docs for this branch, and then
   # building a full set of docs for and update the public interface.
   build-branch-docs:
@@ -28,6 +25,11 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
+      
+      - name: Setup Rust
+        shell: bash
+        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
       - name: build HTML docs
         # This builds the docs for the current checked-out branch to verify they
         # are buildable.
@@ -88,6 +90,9 @@ jobs:
       - name: Install `jq`
         shell: bash
         run: sudo apt update && sudo apt-get install -y jq
+      - name: Setup Rust
+        shell: bash
+        run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
       - name: tags and pull requests
         shell: bash
         run: |
