@@ -25,11 +25,11 @@ setup:
 		cd "$(MIR_JSON)" && cargo build --release
 		
 rust-docs:
-	D="$$PWD/$(BUILDDIR)/rust-docs" && \
-		mkdir -p "$$D" && \
-		pushd "$(MIR_JSON)" && \
-		./target/release/mir-json-translate-libs --docs --out-dir "$$D" && \
-		popd && cp -r "$$D/rlibs/doc" "$(RUSTDOCS)" && rm -rf "$$D"
+	HERE="$$PWD" && D="$$HERE/$(BUILDDIR)/rust-docs" && \
+	mkdir -p "$$D" && \
+	cd "$(MIR_JSON)" && \
+	./target/release/mir-json-translate-libs --docs --out-dir "$$D" && \
+	cd "$$HERE" && cp -r "$$D/rlibs/doc" "$(RUSTDOCS)" && rm -rf "$$D"
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
