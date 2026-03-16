@@ -3,13 +3,8 @@ Verifying Rust
 
 TODO
 
-Subsection
-----------
-
-Text
+Rust Support Libraries
+----------------------
 
 
-.. code-block:: rust
-
-    fn f() {
-    }
+Documentation for the `crucible create <rust-doc/crucible/index.html>`__.

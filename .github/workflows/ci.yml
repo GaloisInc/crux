@@ -31,7 +31,7 @@ jobs:
         run: |
           cd docs
           make setup
-          make html
+          make html && make rust-docs
   build-pages-docs:
     # Do not run this on forks. It isn't sufficient to check the pull
     # request info because we might also be on `main` in a fork. It
@@ -165,7 +165,7 @@ jobs:
           for tgt in ${TGTBASE}/* ; do
             (cd ${tgt}/docs
              echo "Building HTML docs in ${tgt}/docs"
-             make setup && make html ||
+             make setup && make html && make rust-docs ||
                echo "Unable to generate documentation for this release" > ${tgt}/docs/_build/html/index.html
             )
             mkdir -p docs/_build
