@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: false
+          submodules: true
           fetch-depth: 0
       - name: build HTML docs
         # This builds the docs for the current checked-out branch to verify they
@@ -31,7 +31,8 @@ jobs:
         run: |
           cd docs
           make setup
-          make html && make rust-docs
+          make html
+          make rust-docs
   build-pages-docs:
     # Do not run this on forks. It isn't sufficient to check the pull
     # request info because we might also be on `main` in a fork. It
@@ -123,10 +124,7 @@ jobs:
             mkdir $tgt
             # n.b. the switch here is important to make sure the branch is
             # present in the clone.
-            git -C ${REFREPO} fetch origin ${prref}
-            git -C ${REFREPO} checkout ${prref}
-            git clone ${REFREPO} ${tgt}
-            git -C ${tgt} checkout ${prref}
+            .github/git-checkout "${REFREPO}" "${prref}" "{$tgt}"
             if [ ! -d ${tgt}/docs ] ; then
               echo "Removing ${tgt}: no docs in this version"
               rm -rf ${tgt}
@@ -138,9 +136,7 @@ jobs:
             tagname=$(cat tags.json | jq -- -r .[${X}].name)
             tgt=${TGTBASE}/${tagname}
             echo "Checkout Release Tag ${tagname} into ${tagname}"
-            git -C ${REFREPO} checkout ${tagname}
-            git clone ${REFREPO} ${tgt}
-            git -C ${tgt} checkout ${tagname}
+            .github/git-checkout "${REFREPO}" "${prref}" "{$tgt}"
             if [ ! -d ${tgt}/docs ] ; then
               echo "Removing ${tgt}: no docs in this version"
               rm -rf ${tgt}

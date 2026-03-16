@@ -1,0 +1,18 @@
+#/bin/bash
+
+# Checkout a specific reference from a repo
+
+if [ "$#" -ne 3 ]; then
+  echo "Usage: $0 REPO_PATH REFERENCE TARGET_PATH" >&2
+  exit 1
+fi
+
+REFREPO=$1
+REF=$2
+TGT=$3
+
+git -C "${REFREPO}" fetch origin "${REF}"
+git -C "${REFREPO}" checkout "${REF}"
+git clone "${REFREPO}" "${TGT}"
+git -C "${TGT}" checkout "${REF}"
+git -C "${TGT}" submodule update --init
