@@ -1,0 +1,3 @@
+[submodule "deps/mir-json"]
+	path = deps/mir-json
+	url = git@github.com:GaloisInc/mir-json.git
