@@ -79,7 +79,7 @@ Crux will report a counterexample showing concrete values of `x` and `y` that vi
 
 ## Running on a Cargo project
 
-For larger projects, you can use `cargo crux-test` instead of invoking crux-mir-comp on a single file. In the root of a Cargo project:
+For larger projects, you can use `cargo crux-test` instead of invoking `crux-mir-comp` on a single file. In the root of a Cargo project:
 
 ```bash
 cargo crux-test --lib -- --solver=z3

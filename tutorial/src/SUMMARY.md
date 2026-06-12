@@ -11,3 +11,9 @@
 - [Interpreting Failures](./interpreting-failures.md)
 - [Symbolic Coverage Analysis](./coverage-analysis.md)
 - [Profiling Crux Runs](./profiling.md)
+- [Limitations](./limitations.md)
+
+---
+
+- [Appendix A: Comparison with Other Tools](./comparison.md)
+- [Appendix B: Building from Source](./building-from-source.md)

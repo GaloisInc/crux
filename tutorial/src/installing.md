@@ -1,6 +1,6 @@
 # Installing Crux
 
-This chapter covers building crux-mir-comp from source. Binary releases may be available from the [crucible releases page](https://github.com/GaloisInc/crucible/releases), but building from source ensures you get matching versions of all components.
+This chapter covers installing `crux-mir-comp` from a pre-built binary distribution. If you'd like to build `crux-mir-comp` from source instead, see [Appendix B: Building from Source](./building-from-source.md).
 
 ## Supported platforms
 
@@ -10,58 +10,59 @@ Crux is developed and tested on Linux and macOS (including Apple Silicon). Windo
 
 You will need:
 
-- **GHC 9.6, 9.8, or 9.10** and **cabal** (install via [ghcup](https://www.haskell.org/ghcup/))
 - **Rust** (install via [rustup](https://rustup.rs/))
-- **An SMT solver**: either [Z3](https://github.com/Z3Prover/z3/releases) or [Yices](http://yices.csl.sri.com/)
-- Standard build tools (`cc`, `make`, etc.)
 
-On macOS, Z3 can be installed with Homebrew:
+## 1. Download the SAW release
 
-```bash
-brew install z3
-```
+`crux-mir-comp` is distributed as part of the [SAW](https://github.com/GaloisInc/saw-script) release. Download the latest release from the [SAW releases page](https://github.com/GaloisInc/saw-script/releases). Choose the `-with-solvers` variant for your platform to get bundled SMT solvers.
 
-## Building from source
-
-### 1. Clone the repository and initialize submodules
+For macOS on Apple Silicon:
 
 ```bash
-git clone https://github.com/GaloisInc/saw-script.git
-cd saw-script
-git submodule update --init --recursive
+gh release download v1.5.1 --repo GaloisInc/saw-script \
+  --pattern "saw-1.5.1-macos-15-ARM64-with-solvers.tar.gz"
+tar xzf saw-1.5.1-macos-15-ARM64-with-solvers.tar.gz
 ```
 
-### 2. Generate version information
-
-The build requires generated version files. From the saw-script root:
+Add the `bin/` directory to your PATH:
 
 ```bash
-bash saw-version/src/SAWVersion/savegitinfo.sh
+export PATH=$(pwd)/saw-1.5.1-macos-15-ARM64-with-solvers/bin:$PATH
 ```
 
-### 3. Build crux-mir-comp
+Verify that the binary works:
 
 ```bash
-cabal build crux-mir-comp
+crux-mir-comp --version
 ```
 
-This compiles crux-mir-comp and all its Haskell dependencies (crucible, what4, cryptol, etc.). The first build takes a while.
+## 2. Install mir-json
 
-### 4. Install mir-json
+mir-json translates Rust code into MIR for Crux to consume. It requires a specific nightly Rust toolchain and must match the SAW release version you downloaded.
 
-mir-json translates Rust code into MIR for Crux to consume. It requires a specific nightly Rust toolchain. Check the required version in `deps/mir-json/rust-toolchain.toml`, then:
+For SAW v1.5.1, the matching mir-json commit is `7e12cecee9aceefd903191f4bd888d68e9a9cc0a` and the required toolchain is `nightly-2025-09-14`:
 
 ```bash
 rustup toolchain install nightly-2025-09-14 --component rustc-dev,rust-src
-cd deps/mir-json
+git clone https://github.com/GaloisInc/mir-json.git
+cd mir-json
+git checkout 7e12cecee9aceefd903191f4bd888d68e9a9cc0a
 cargo +nightly-2025-09-14 install --path . --locked
 ```
 
 This installs `mir-json`, `crux-rustc`, `cargo-crux-test`, and related tools into `~/.cargo/bin/`.
 
-### 5. Translate the standard libraries
+**Finding the correct mir-json version for other SAW releases:** mir-json is a submodule of the saw-script repository at `deps/mir-json`. To find the matching commit for a given SAW release tag, run:
 
-Crux needs pre-translated versions of the Rust standard library. From the `deps/mir-json` directory:
+```bash
+git ls-tree <saw-release-tag> deps/mir-json
+```
+
+The nightly toolchain version is specified in `rust-toolchain.toml` within the mir-json repository at that commit.
+
+## 3. Translate the standard libraries
+
+Crux needs pre-translated versions of the Rust standard library. From the `mir-json` directory:
 
 ```bash
 mir-json-translate-libs
@@ -69,7 +70,7 @@ mir-json-translate-libs
 
 This creates an `rlibs_real` directory containing the translated libraries.
 
-### 6. Set environment variables
+## 4. Set environment variables
 
 Point Crux at the translated libraries. The path depends on your platform:
 
@@ -81,22 +82,26 @@ On Linux, replace `aarch64-apple-darwin` with your target triple (e.g., `x86_64-
 
 Adding this to your shell configuration (`.bashrc`, `.zshrc`, etc.) is recommended.
 
-## Verifying the installation
+## 5. Verify the installation
 
-Check that crux-mir-comp runs:
+Create a small test file to confirm the full toolchain (mir-json, rlibs, and the solver) works end-to-end:
 
-```bash
-cabal exec -- crux-mir-comp --version
+```rust
+// test.rs
+use crucible::Symbolic;
+use crucible::crucible_assert;
+
+#[crux::test]
+fn simple_test() {
+    let x = u8::symbolic("x");
+    crucible_assert!(x.wrapping_add(1) != 0 || x == 255);
+}
 ```
 
-To verify the full toolchain works end-to-end (mir-json, rlibs, and the solver), see the [Rust Quick Start](./rust-quick-start.md).
+Run it:
 
-## Notes
+```bash
+crux-mir-comp test.rs
+```
 
-- The nightly toolchain version required by mir-json changes periodically. Always check `deps/mir-json/rust-toolchain.toml` for the current requirement.
-- Your mir-json version must match your crux-mir-comp version. If you update one, rebuild the other.
-- After updating mir-json, re-run `mir-json-translate-libs` to regenerate the rlibs.
-
-## TODO
-
-- Validate these installation steps in a clean environment (Docker container or CI workflow) to confirm they work end-to-end without implicit dependencies.
+You should see output ending with `Overall status: Valid.`, indicating that the assertion holds for all possible values of `x`.
