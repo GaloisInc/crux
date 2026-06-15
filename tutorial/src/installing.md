@@ -36,7 +36,7 @@ crux-mir-comp --version
 
 ## 2. Install `mir-json`
 
-`mir-json` translates Rust code into MIR for Crux to consume. It requires a specific nightly Rust toolchain and must match the SAW release version you downloaded.
+`mir-json` translates Rust code into an intermediate representation (IR) called MIR for Crux to consume. `mir-json` requires a specific nightly Rust toolchain and must match the SAW release version you downloaded.
 
 For SAW v1.5.1, the matching `mir-json` commit is `7e12cecee9aceefd903191f4bd888d68e9a9cc0a` and the required toolchain is `nightly-2025-09-14`:
 
@@ -48,7 +48,7 @@ git checkout 7e12cecee9aceefd903191f4bd888d68e9a9cc0a
 cargo +nightly-2025-09-14 install --path . --locked
 ```
 
-This installs `mir-json`, `crux-rustc`, `cargo-crux-test`, and related tools into `~/.cargo/bin/`.
+These commands install `mir-json`, `crux-rustc`, `cargo-crux-test`, and related tools into `~/.cargo/bin/`.
 
 **Finding the correct `mir-json` version for other SAW releases:** `mir-json` is a submodule of the saw-script repository at `deps/mir-json`. To find the matching commit for a given SAW release tag, run:
 
@@ -60,13 +60,13 @@ The nightly toolchain version is specified in `rust-toolchain.toml` within the `
 
 ## 3. Translate the standard libraries
 
-Crux needs pre-translated versions of the Rust standard library. From the directory where you cloned `mir-json`:
+Crux needs pre-translated versions of the Rust standard library. From the directory where you cloned `mir-json`, run:
 
 ```bash
 mir-json-translate-libs
 ```
 
-This creates an `rlibs_real` directory containing the translated libraries.
+This command creates an `rlibs_real` directory containing the translated libraries.
 
 ## 4. Set environment variables
 
@@ -78,11 +78,11 @@ export CRUX_RUST_LIBRARY_PATH=$(pwd)/rlibs_real/lib/rustlib/aarch64-apple-darwin
 
 On Linux, replace `aarch64-apple-darwin` with your target triple (e.g., `x86_64-unknown-linux-gnu`).
 
-Adding this to your shell configuration (`.bashrc`, `.zshrc`, etc.) is recommended.
+We recommend adding this line to your shell configuration (`.bashrc`, `.zshrc`, etc.).
 
 ## 5. Verify the installation
 
-Create a small test file to confirm the full toolchain (`mir-json`, rlibs, and the solver) works end-to-end:
+Create a small test file to confirm that the fulolchain (`mir-json`, translated libraries, and solver) works end-to-end:
 
 ```rust
 // test.rs
@@ -102,4 +102,4 @@ Run it:
 crux-mir-comp test.rs
 ```
 
-You should see output ending with `Overall status: Valid.`, indicating that the assertion holds for all possible values of `x`.
+You should see output ending with `Overall status: Valid.`, indicating that the assertion wrapped in `crucible_assert!()` holds for all possible values of `x`. In other words, we've proven via symbolic testing that for any `x` of type `u8`, the logical OR of `x` and 0 is equal to `x`.
