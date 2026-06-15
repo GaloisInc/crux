@@ -14,6 +14,8 @@ Crux currently comes in several variants:
 
 Despite these variants, the workflow is the same: you write test functions with symbolic inputs and assertions, and Crux exhaustively checks those assertions using symbolic execution and SMT solving.
 
+Tutorial examples will focus on `crux-mir-comp`, the most mature variant.
+
 ## What can I use Crux for?
 
 Crux is designed for verifying functional correctness properties of code. Common use cases include:
