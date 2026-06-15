@@ -8,9 +8,7 @@ Crux is developed and tested on Linux and macOS (including Apple Silicon). Windo
 
 ## Prerequisites
 
-You will need:
-
-- **Rust** (install via [rustup](https://rustup.rs/))
+You will need a [Rust](https://rust-lang.org/) compiler, which you can install via the [rustup](https://rustup.rs/) tool.
 
 ## 1. Download the SAW release
 
