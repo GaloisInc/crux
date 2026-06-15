@@ -34,11 +34,11 @@ Verify that the binary works:
 crux-mir-comp --version
 ```
 
-## 2. Install mir-json
+## 2. Install `mir-json`
 
-mir-json translates Rust code into MIR for Crux to consume. It requires a specific nightly Rust toolchain and must match the SAW release version you downloaded.
+`mir-json` translates Rust code into MIR for Crux to consume. It requires a specific nightly Rust toolchain and must match the SAW release version you downloaded.
 
-For SAW v1.5.1, the matching mir-json commit is `7e12cecee9aceefd903191f4bd888d68e9a9cc0a` and the required toolchain is `nightly-2025-09-14`:
+For SAW v1.5.1, the matching `mir-json` commit is `7e12cecee9aceefd903191f4bd888d68e9a9cc0a` and the required toolchain is `nightly-2025-09-14`:
 
 ```bash
 rustup toolchain install nightly-2025-09-14 --component rustc-dev,rust-src
@@ -50,17 +50,17 @@ cargo +nightly-2025-09-14 install --path . --locked
 
 This installs `mir-json`, `crux-rustc`, `cargo-crux-test`, and related tools into `~/.cargo/bin/`.
 
-**Finding the correct mir-json version for other SAW releases:** mir-json is a submodule of the saw-script repository at `deps/mir-json`. To find the matching commit for a given SAW release tag, run:
+**Finding the correct `mir-json` version for other SAW releases:** `mir-json` is a submodule of the saw-script repository at `deps/mir-json`. To find the matching commit for a given SAW release tag, run:
 
 ```bash
 git ls-tree <saw-release-tag> deps/mir-json
 ```
 
-The nightly toolchain version is specified in `rust-toolchain.toml` within the mir-json repository at that commit.
+The nightly toolchain version is specified in `rust-toolchain.toml` within the `mir-json` repository at that commit.
 
 ## 3. Translate the standard libraries
 
-Crux needs pre-translated versions of the Rust standard library. From the `mir-json` directory:
+Crux needs pre-translated versions of the Rust standard library. From the directory where you cloned `mir-json`:
 
 ```bash
 mir-json-translate-libs
@@ -82,7 +82,7 @@ Adding this to your shell configuration (`.bashrc`, `.zshrc`, etc.) is recommend
 
 ## 5. Verify the installation
 
-Create a small test file to confirm the full toolchain (mir-json, rlibs, and the solver) works end-to-end:
+Create a small test file to confirm the full toolchain (`mir-json`, rlibs, and the solver) works end-to-end:
 
 ```rust
 // test.rs

@@ -85,7 +85,7 @@ For larger projects, you can use `cargo crux-test` instead of invoking `crux-mir
 cargo crux-test --lib -- --solver=z3
 ```
 
-This compiles the project with mir-json and runs all functions annotated with `#[crux::test]`.
+This compiles the project with `mir-json` and runs all functions annotated with `#[crux::test]`.
 
 ## Demo video
 

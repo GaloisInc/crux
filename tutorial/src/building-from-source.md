@@ -43,9 +43,9 @@ cabal build crux-mir-comp
 
 This compiles `crux-mir-comp` and all its Haskell dependencies (crucible, what4, cryptol, etc.). The first build takes a while.
 
-### 4. Install mir-json
+### 4. Install `mir-json`
 
-mir-json translates Rust code into MIR for Crux to consume. It requires a specific nightly Rust toolchain. Check the required version in `deps/mir-json/rust-toolchain.toml`, then:
+`mir-json` translates Rust code into MIR for Crux to consume. It requires a specific nightly Rust toolchain. Check the required version in `deps/mir-json/rust-toolchain.toml`, then:
 
 ```bash
 rustup toolchain install nightly-2025-09-14 --component rustc-dev,rust-src
@@ -85,13 +85,13 @@ Check that `crux-mir-comp` runs:
 cabal exec -- crux-mir-comp --version
 ```
 
-To verify the full toolchain works end-to-end (mir-json, rlibs, and the solver), see the [Rust Quick Start](./rust-quick-start.md).
+To verify the full toolchain works end-to-end (`mir-json`, rlibs, and the solver), see the [Rust Quick Start](./rust-quick-start.md).
 
 ## Notes
 
-- The nightly toolchain version required by mir-json changes periodically. Always check `deps/mir-json/rust-toolchain.toml` for the current requirement.
-- Your mir-json version must match your `crux-mir-comp` version. If you update one, rebuild the other.
-- After updating mir-json, re-run `mir-json-translate-libs` to regenerate the rlibs.
+- The nightly toolchain version required by `mir-json` changes periodically. Always check `deps/mir-json/rust-toolchain.toml` for the current requirement.
+- Your `mir-json` version must match your `crux-mir-comp` version. If you update one, rebuild the other.
+- After updating `mir-json`, re-run `mir-json-translate-libs` to regenerate the rlibs.
 
 ## TODO
 
