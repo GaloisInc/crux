@@ -87,6 +87,10 @@ jobs:
         run: sudo apt update && sudo apt-get install -y jq
       - name: tags and pull requests
         shell: bash
+        # n.b. these requests return at most 30 items per page (the GitHub
+        # default).  If we ever exceed 30 open PRs or 30 tags this will silently
+        # miss the rest; switch to `?per_page=100` plus paging (or `gh api
+        # --paginate`) when that becomes a concern.
         run: |
           curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             ${{ github.api_url }}/repos/${{ github.repository }}/pulls > pulls.json
@@ -116,17 +120,14 @@ jobs:
           for X in $(seq 0 $(( $(cat pulls.json | jq -- length) - 1))) ; do
             echo Handling Pull Request number ${X}
             prnum=$(cat pulls.json | jq -- .[${X}].number)
-            prref=$(cat pulls.json | jq -- -r .[${X}].merge_commit_sha)
+            prref=$(cat pulls.json | jq -r -- .[${X}].merge_commit_sha)
             tgt=${TGTBASE}/PR_${prnum}
             if [ "X$prref" == "Xnull" ] ; then
               echo Skipping PR ${X}: probable unresolved merge conflict
               continue
             fi
             echo "Checkout Pull Request ${prnum} at ${prref} into PR_${prnum}"
-            mkdir $tgt
-            # n.b. the switch here is important to make sure the branch is
-            # present in the clone.
-            .github/git-checkout "${REFREPO}" "${prref}" "{$tgt}"
+            .github/git-checkout "${REFREPO}" "${prref}" "${tgt}"
             if [ ! -d ${tgt}/docs ] ; then
               echo "Removing ${tgt}: no docs in this version"
               rm -rf ${tgt}
@@ -135,10 +136,10 @@ jobs:
           echo Acquiring tagged repositories
           for X in $(seq 0 $(( $(cat tags.json | jq -- length) - 1))) ; do
             echo Handling Tag number ${X}
-            tagname=$(cat tags.json | jq -- -r .[${X}].name)
+            tagname=$(cat tags.json | jq -r -- .[${X}].name)
             tgt=${TGTBASE}/${tagname}
             echo "Checkout Release Tag ${tagname} into ${tagname}"
-            .github/git-checkout "${REFREPO}" "${prref}" "{$tgt}"
+            .github/git-checkout "${REFREPO}" "${tagname}" "${tgt}"
             if [ ! -d ${tgt}/docs ] ; then
               echo "Removing ${tgt}: no docs in this version"
               rm -rf ${tgt}
@@ -152,7 +153,7 @@ jobs:
           for tgt in ${TGTBASE}/* ; do
             echo "Setting config in ${tgt}"
             (cd ${tgt}/docs &&
-             python3 -- ${topdir}/.github/gen_html_context.py ${{ github.repository }} $(basename ${tgt}) >> conf.py
+             python3 ${topdir}/.github/gen_html_context.py ${{ github.repository }} $(basename ${tgt}) >> conf.py
             )
           done
       - name: docs for each tag and pull request
@@ -163,8 +164,10 @@ jobs:
           for tgt in ${TGTBASE}/* ; do
             (cd ${tgt}/docs
              echo "Building HTML docs in ${tgt}/docs"
-             make setup && make html && make rust-docs ||
-               echo "Unable to generate documentation for this release" > ${tgt}/docs/_build/html/index.html
+             make setup && make html && make rust-docs || {
+               mkdir -p _build/html
+               echo "Unable to generate documentation for this release" > _build/html/index.html
+             }
             )
             mkdir -p docs/_build
             mv ${tgt}/docs/_build/html docs/_build/$(basename ${tgt})
