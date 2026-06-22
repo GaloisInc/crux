@@ -8,8 +8,9 @@ distribution. If you'd like to build ``crux-mir-comp`` from source instead, see
 Supported platforms
 -------------------
 
-Crux is developed and tested on Linux and macOS (including Apple Silicon).
-Windows is not officially supported.
+Crux is developed and tested on Linux and macOS, including Apple Silicon.
+
+We do not yet officially support Windows. See `this GitHub issue <https://github.com/GaloisInc/mir-json/issues/275/>`_ for a description of what's involved in adding Windows support.
 
 Prerequisites
 -------------
