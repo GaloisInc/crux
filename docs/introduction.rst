@@ -7,7 +7,7 @@ What is Crux?
 Crux is a symbolic testing tool for C/C++ and Rust programs, developed by
 `Galois, Inc <https://www.galois.com/>`_.
 
-Crux checks your test assertions exhaustively, on all possible inputs within a
+Crux tests are similar to unit tests, but Crux can check your test assertions exhaustively, on all possible inputs within a
 given scope. If an assertion has any *counterexamples*---inputs that cause the
 assertion to fail---Crux will find one of these counterexamples. If Crux does
 not find a counterexample, you have a proof that the assertion always holds.
