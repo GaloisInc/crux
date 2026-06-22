@@ -12,4 +12,4 @@ html_context={'current_version': sys.argv[2],
               'versions':sorted([(v, bldtgt(v)) for v in d if not v.startswith('PR_')]),
               'pull_reqs':sorted([(v, bldtgt(v)) for v in d if v.startswith('PR_')])}
 
-print('html_context=',html_context)
+print('\nhtml_context=',html_context)
