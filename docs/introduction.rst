@@ -7,7 +7,7 @@ What is Crux?
 Crux is a symbolic testing tool for C/C++ and Rust programs, developed by
 `Galois, Inc <https://www.galois.com/>`_.
 
-Crux tests are similar to unit tests, but Crux can check your test assertions exhaustively, on all possible inputs within a
+Crux tests are similar to unit tests, but Crux can check your test assertions exhaustively on all inputs within a
 given scope. If an assertion has any *counterexamples*---inputs that cause the
 assertion to fail---Crux will find one of these counterexamples. If Crux does
 not find a counterexample, you have a proof that the assertion always holds.
@@ -20,11 +20,11 @@ Crux currently comes in several variants:
 - **crux-mir-comp**: extends ``crux-mir`` with *compositional verification*,
   enabling you to verify large programs piece by piece.
 
-Despite these variants, the workflow is the same: you write test functions with
+The workflow for each variant is the same: you write test functions with
 symbolic inputs and assertions, and Crux exhaustively checks those assertions
 using symbolic execution and SMT solving.
 
-Tutorial examples will focus on ``crux-mir-comp``, the most mature variant.
+In this tutorial, we'll use ``crux-mir-comp`` in our examples because it's the most mature variant.
 
 What can I use Crux for?
 ------------------------
