@@ -1,13 +1,13 @@
 Rust Quick Start
 ================
 
-This section demonstrates how to test a simple Rust program with Crux. It assumes you have completed the steps in :doc:`installation`.
+This section demonstrates how to use Crux to test a simple Rust program. It assumes you have completed the steps in :doc:`installation`.
 
-Our example program: a secret message encoder
----------------------------------------------
+Our example program: a secret message encoder/decoder
+-----------------------------------------------------
 The Rust program that we'll test implements ROT13, an algorithm for encoding and decoding secret messages.
 
-ROT13 takes a message as input and "rotates" or shifts each letter 13 steps forward in the Latin alphabet:
+ROT13 takes a message (sequence of characters) as input and "rotates" or shifts each letter 13 steps forward in the Latin alphabet:
 
 .. parsed-literal::
 
@@ -15,13 +15,13 @@ ROT13 takes a message as input and "rotates" or shifts each letter 13 steps forw
    **B** (letter  2)  ━━▶  **O** (2 + 13 = letter 15)
    ...
 
-Letters toward the end of the alphabet shift 13 steps backward or (equivalently) shift 13 steps forward and wrap around to the beginning. For example
+Letters in the latter half of the alphabet (N--Z) wrap around to the beginning. You can also think of N--Z as shifting 13 steps backward. You'll get the same result either way, because the Latin alphabet has 26 letters. For example:
 
 .. parsed-literal::
 
-   **Z** (letter 26)  ━━▶  **M** (26 - 13 = letter 13)
+   **Z** (letter 26)  ━━▶  **M** ((26 + 13) % 26 = 26 - 13 = letter 13)
 
-At Galois, we sometimes use ROT13 to encrypt answers to math and logic puzzles, so that we can share answers without ruining the puzzle for others.
+At Galois, we sometimes use ROT13 to encrypt answers to math and logic puzzles, so that we can share answers without spoiling the puzzle for those who want to solve it themselves. Here's an example: 
 
 (example puzzle)
 
@@ -29,7 +29,7 @@ At Galois, we sometimes use ROT13 to encrypt answers to math and logic puzzles, 
 The code under test
 -------------------
 
-Create a file ``rot13.rs`` with a simple rot13 implementation:
+Let's create a file called ``rot13.rs`` with a simple ROT13 implementation:
 
 .. code-block:: rust
 
@@ -46,6 +46,8 @@ Create a file ``rot13.rs`` with a simple rot13 implementation:
        }
        out
    }
+
+Notice that ``rot13()`` takes in a fixed-size 16-character message. Crux works best on functions with fixed-size parameters.
 
 A property that holds
 ---------------------
