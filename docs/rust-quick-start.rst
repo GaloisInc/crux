@@ -1,8 +1,30 @@
 Rust Quick Start
 ================
 
-This section walks through running Crux on a simple Rust example. It assumes
-you have completed the steps in :doc:`installation`.
+This section demonstrates how to test a simple Rust program with Crux. It assumes you have completed the steps in :doc:`installation`.
+
+Our example program: a secret message encoder
+---------------------------------------------
+The Rust program that we'll test implements ROT13, an algorithm for encoding and decoding secret messages.
+
+ROT13 takes a message as input and "rotates" or shifts each letter 13 steps forward in the Latin alphabet:
+
+.. parsed-literal::
+
+   **A** (letter  1)  ━━▶  **N** (1 + 13 = letter 14)
+   **B** (letter  2)  ━━▶  **O** (2 + 13 = letter 15)
+   ...
+
+Letters toward the end of the alphabet shift 13 steps backward or (equivalently) shift 13 steps forward and wrap around to the beginning. For example
+
+.. parsed-literal::
+
+   **Z** (letter 26)  ━━▶  **M** (26 - 13 = letter 13)
+
+At Galois, we sometimes use ROT13 to encrypt answers to math and logic puzzles, so that we can share answers without ruining the puzzle for others.
+
+(example puzzle)
+
 
 The code under test
 -------------------
