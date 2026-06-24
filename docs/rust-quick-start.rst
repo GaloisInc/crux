@@ -65,7 +65,7 @@ First, add this code to your ``rot13.rs`` file:
 
    #[crux::test]
    fn rot13_involutive() {
-       let buf: [u8; 16] = Symbolic::symbolic("buf");
+       let buf: [u8; 16] = <[u8; 16]>::symbolic("buf");
        crucible_assert!(rot13(rot13(buf)) == buf);
    }
 
@@ -79,13 +79,13 @@ You should see:
 
 .. code-block:: text
 
-   test test/..::rot13_involutive[0]: [Crux] Attempting to prove verification conditions.
-   [0Kok
+   test rot13/...::rot13_involutive[0]: [Crux] Attempting to prove verification conditions.
+   ok
 
    [Crux-MIR] ---- FINAL RESULTS ----
    [Crux] Goal status:
-   [Crux]   Total: 1
-   [Crux]   Proved: 1
+   [Crux]   Total: 721
+   [Crux]   Proved: 721
    [Crux]   Disproved: 0
    [Crux]   Incomplete: 0
    [Crux]   Unknown: 0
@@ -105,17 +105,21 @@ When Crux runs this test, it uses symbolic execution and an SMT solver to either
 A property that fails
 ---------------------
 
-Now add a test claiming that rot13 always changes its input:
+Now let's see what happens when we use Crux to check a property of ``rot13()`` that *doesn't* hold.
+
+Here's a property that might seem true if you don't think about it too hard: the output of ``rot13()`` is never equal to its input. After all, the function changes every letter of its input message, so it should never return the message unchanged, right?
+
+We can encode that property as the following Crux test:
 
 .. code-block:: rust
 
    #[crux::test]
    fn rot13_always_changes() {
-       let buf: [u8; 16] = Symbolic::symbolic("buf");
+       let buf: [u8; 16] = <[u8; 16]>::symbolic("buf");
        crucible_assert!(rot13(buf) != buf);
    }
 
-Run with the ``-m`` flag to print a counterexample:
+Now we'll run Crux on the file and pass it the ``-m`` flag, which makes Crux print a counterexample when it finds one:
 
 .. code-block:: bash
 
