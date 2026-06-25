@@ -119,27 +119,39 @@ We can encode that property as the following Crux test:
        crucible_assert!(rot13(buf) != buf);
    }
 
-Now we'll run Crux on the file and pass it the ``-m`` flag, which makes Crux print a counterexample when it finds one:
+Now we'll run Crux on the file like this:
 
 .. code-block:: bash
 
    crux-mir-comp rot13.rs -m
 
-Crux will find a counterexample: any input consisting entirely of
-non-alphabetic bytes (like ``[0, 0, 0, ...]``) is left unchanged by rot13,
-disproving the assertion.
+The ``-m`` flag makes Crux print a model (another name for a counterexample) when it finds one.
 
-- The second test fails because rot13 is the identity on non-alphabetic bytes.
+Your output should contain something like this:
 
-Running on a Cargo project
---------------------------
+.. code-block:: text
 
-For larger projects, you can use ``cargo crux-test`` instead of invoking
-``crux-mir-comp`` on a single file. In the root of a Cargo project:
+   failures:
+
+   ---- rot13_test/51948743::rot13_always_changes[0] counterexamples ----
+   Model:
+   buf = 0x60 (signed), 0x60 (unsigned), 96 (decimal)
+   buf = 0x60 (signed), 0x60 (unsigned), 96 (decimal)
+   ... (repeats 14 more times)
+
+It turns out that this property is false! On line 8 of the ``rot13()`` definition above, you'll see that the function simply copies any non-alphabetic input characters to the output. Therefore, when the input is entirely non-alphabetic, the output of ``rot13()`` is equal to its input.
+
+In this case, the model that Crux found is a 16-byte array in which each byte is 0x60: the backtick (`````) character. When ``rot13()`` takes this array as an argument, its behavior violates the assertion in our ``rot13_always_changes()`` test.
+
+Of course, this model isn't the only one that disproves the assertion. Depending on which version of Crux you run and which SMT solver it calls, your Crux installation might find a different model.
+
+Running Crux on a Cargo project
+-------------------------------
+
+For larger projects, you can use the command ``cargo crux-test`` instead of invoking ``crux-mir-comp`` on a single file. In the root of a Cargo project, run:
 
 .. code-block:: bash
 
    cargo crux-test --lib
 
-This compiles the project with ``mir-json`` and runs all functions annotated
-with ``#[crux::test]``.
+This command compiles the project with ``mir-json`` and runs all functions annotated with ``#[crux::test]``.
