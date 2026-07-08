@@ -169,6 +169,15 @@ In this case, the model that Crux found is a 16-byte array in which each byte is
 
 Of course, this model isn't the only one that disproves the assertion. Depending on which version of Crux you run and which SMT solver it calls, your Crux installation might find a different model.
 
+A property with a precondition
+------------------------------
+
+As we just discovered, the property "ROT13's output differs from its input" isn't always true. However, it *is* always true for a subset of inputs: inputs that contain at least one alphabetic character. ROT13 shifts at least that one character, which makes the entire output different from the input.
+
+Here's another way of stating this fact: for inputs that satisfy the *precondition* "contains an alphabetic character," ROT13's output satisfies the *postcondition* "differs from the input." The precondition is a property that we assume is true at the start of the ``rot13()`` call; the postcondition is a property that holds after the call terminates.
+
+Up to this point in the tutorial, we've only asked Crux to check properties that are defined solely in terms of postconditions. For example, we proved above that ``rot13(rot13(buf)) == buf`` for *any* buffer; we didn't place any preconditions on the input buffer. But Crux can check properties that include preconditions, too, which is handy because we can define all kinds of useful function properties in terms of pre- and postconditions.
+
 Running Crux on a Cargo project
 -------------------------------
 
