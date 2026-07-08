@@ -21,8 +21,32 @@ The letters N--Z shift past the end of the alphabet and wrap around to the begin
 
    **Z** (letter 26)  ━━▶  **M** ((26 + 13) % 26 = 26 - 13 = letter 13)
 
-At Galois, we sometimes use ROT13 to encrypt answers to math and logic puzzles, so that we can share answers without spoiling the puzzle for those who are still solving it.
+At Galois, we sometimes use ROT13 to encrypt answers to math and logic puzzles, so that we can share answers without spoiling the puzzle for those who are still solving it. Here's a fun one with a ROT13-encoded solution:
 
+.. admonition:: Puzzle
+
+   There are 100 coins on a table. 10 coins are heads-up, and 90 coins are tails-up. You're blindfolded and can't see which coins are heads-up and which are tails-up, but you're allowed to flip coins over. How can you partition these coins into two groups such that each group has the same number of heads facing up?
+
+.. dropdown:: Solution
+   :icon: light-bulb
+
+   .. tab-set::
+
+      .. tab-item:: ROT13-encoded
+
+         Chg 10 pbvaf va Tebhc N. Yrg'f fnl gung *K* vf gur ahzore bs urnqf va Tebhc N; gung zrnaf gurer ner 10-*K* gnvyf va Tebhc N.
+
+         Abj chg gur erznvavat pbvaf va Tebhc O. Tebhc O zhfg unir 10-*K* urnqf, orpnhfr gurer ner 10 urnqf va gbgny naq jr chg *K* bs gurz va Tebhc N.
+
+         Svanyyl, syvc nyy pbvaf va Tebhc N. Tebhc N abj unf *K* gnvyf naq 10-*K* urnqf: gur fnzr ahzore bs urnqf nf Tebhc O!
+
+      .. tab-item:: Decoded
+
+         Put 10 coins in Group A. Let's say that *X* is the number of heads in Group A; that means there are 10-*X* tails in Group A.
+
+         Now put the remaining coins in Group B. Group B must have 10-*X* heads, because there are 10 heads in total and we put *X* of them in Group A.
+
+         Finally, flip all coins in Group A. Group A now has *X* tails and 10-*X* heads: the same number of heads as Group B!
 
 The code under test
 -------------------
