@@ -10,109 +10,66 @@ Supported platforms
 
 Crux is developed and tested on Linux and macOS, including Apple Silicon.
 
-We do not yet officially support Windows. See `this GitHub issue <https://github.com/GaloisInc/mir-json/issues/275/>`_ for a description of what's involved in adding Windows support.
+We do not yet officially support Windows. See `this GitHub issue
+<https://github.com/GaloisInc/mir-json/issues/275/>`_ for a description of
+what's involved in adding Windows support.
 
 Prerequisites
 -------------
 
-You will need a `Rust <https://rust-lang.org/>`_ compiler, which you can
+You'll need a `Rust <https://rust-lang.org/>`_ compiler, which you can
 install via the `rustup <https://rustup.rs/>`_ tool.
 
-1. Download the SAW release
-----------------------------
+Step 1: Download saw-suite
+-----------------------------
 
-``crux-mir-comp`` is distributed as part of the
-`SAW <https://github.com/GaloisInc/saw-script>`_ release. Download the latest
-release from the `SAW releases page
-<https://github.com/GaloisInc/saw-script/releases>`_. Choose the
-``-with-solvers`` variant for your platform to get bundled SMT solvers.
+``crux-mir-comp`` is distributed as part of `saw-suite
+<https://github.com/GaloisInc/saw-suite>`_, a bundle of open-source tools for
+verifying software and hardware. You can download the latest saw-suite release
+from the `releases page <https://github.com/GaloisInc/saw-suite/releases>`_, or
+from the command line as follows:
 
 For macOS on Apple Silicon:
 
 .. code-block:: bash
 
-   gh release download v1.5.1 --repo GaloisInc/saw-script \
-     --pattern "saw-1.5.1-macos-15-ARM64-with-solvers.tar.gz"
-   tar xzf saw-1.5.1-macos-15-ARM64-with-solvers.tar.gz
+   curl -o saw-suite-macos-15-ARM64.zip -L \
+     https://github.com/GaloisInc/saw-suite/releases/download/snapshot-20260420/saw-suite-macos-15-ARM64.zip
+   unzip saw-suite-macos-15-ARM64.zip
 
-Add the ``bin/`` directory to your PATH:
+For Ubuntu 24.04 on x86_64:
 
 .. code-block:: bash
 
-   export PATH=$(pwd)/saw-1.5.1-macos-15-ARM64-with-solvers/bin:$PATH
+   curl -o saw-suite-ubuntu-24.04-X64.zip -L \
+     https://github.com/GaloisInc/saw-suite/releases/download/snapshot-20260420/saw-suite-ubuntu-24.04-X64.zip
+   unzip saw-suite-ubuntu-24.04-X64.zip
 
-Verify that the binary works:
+Step 2: Set environment variables
+---------------------------------
+
+Add the saw-suite ``bin/`` directory to your PATH, and point Crux at a
+copy of the Rust standard library that has been translated into a Crux-ready
+format:
+
+.. code-block:: bash
+
+   export PATH=$(pwd)/saw-suite/bin:$PATH
+   export CRUX_RUST_LIBRARY_PATH=$(pwd)/saw-suite/rlibs
+
+We recommend adding these lines to your shell configuration (``.bashrc``,
+``.zshrc``, etc.), using absolute paths.
+
+Step 3: Verify the installation
+-------------------------------
+
+Check that the binary works:
 
 .. code-block:: bash
 
    crux-mir-comp --version
 
-2. Install mir-json
--------------------
-
-``mir-json`` translates Rust code into an intermediate representation (IR)
-called MIR for Crux to consume. ``mir-json`` requires a specific nightly Rust
-toolchain and must match the SAW release version you downloaded.
-
-For SAW v1.5.1, the matching ``mir-json`` commit is
-``7e12cecee9aceefd903191f4bd888d68e9a9cc0a`` and the required toolchain is
-``nightly-2025-09-14``:
-
-.. code-block:: bash
-
-   rustup toolchain install nightly-2025-09-14 --component rustc-dev,rust-src
-   git clone https://github.com/GaloisInc/mir-json.git
-   cd mir-json
-   git checkout 7e12cecee9aceefd903191f4bd888d68e9a9cc0a
-   cargo +nightly-2025-09-14 install --path . --locked
-
-These commands install ``mir-json``, ``crux-rustc``, ``cargo-crux-test``, and
-related tools into ``~/.cargo/bin/``.
-
-**Finding the correct mir-json version for other SAW releases:** ``mir-json``
-is a submodule of the saw-script repository at ``deps/mir-json``. To find the
-matching commit for a given SAW release tag, run:
-
-.. code-block:: bash
-
-   git ls-tree <saw-release-tag> deps/mir-json
-
-The nightly toolchain version is specified in ``rust-toolchain.toml`` within
-the ``mir-json`` repository at that commit.
-
-3. Translate the standard libraries
-------------------------------------
-
-Crux needs pre-translated versions of the Rust standard library. From the
-directory where you cloned ``mir-json``, run:
-
-.. code-block:: bash
-
-   mir-json-translate-libs
-
-This command creates an ``rlibs_real`` directory containing the translated
-libraries.
-
-4. Set environment variables
------------------------------
-
-Point Crux at the translated libraries. The path depends on your platform:
-
-.. code-block:: bash
-
-   export CRUX_RUST_LIBRARY_PATH=$(pwd)/rlibs_real/lib/rustlib/aarch64-apple-darwin/lib
-
-On Linux, replace ``aarch64-apple-darwin`` with your target triple (e.g.,
-``x86_64-unknown-linux-gnu``).
-
-We recommend adding this line to your shell configuration (``.bashrc``,
-``.zshrc``, etc.).
-
-5. Verify the installation
----------------------------
-
-Create a small test file to confirm that the full toolchain (``mir-json``,
-translated libraries, and solver) works end-to-end:
+Then create a small test file to confirm that the full toolchain works end-to-end:
 
 .. code-block:: rust
 
@@ -123,7 +80,7 @@ translated libraries, and solver) works end-to-end:
    #[crux::test]
    fn simple_test() {
        let x = u8::symbolic("x");
-       crucible_assert!(x.wrapping_add(1) != 0 || x == 255);
+       crucible_assert!(x.saturating_add(1) >= x);
    }
 
 Run it:
@@ -133,6 +90,4 @@ Run it:
    crux-mir-comp test.rs
 
 You should see output ending with ``Overall status: Valid.``, indicating that
-the assertion wrapped in ``crucible_assert!()`` holds for all possible values
-of ``x``. In other words, we've proven via symbolic testing that for any ``x``
-of type ``u8``, the logical OR of ``x`` and 0 is equal to ``x``.
+the assertion holds for all possible values of ``x``.
