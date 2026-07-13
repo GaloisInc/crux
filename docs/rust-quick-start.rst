@@ -75,7 +75,7 @@ Notice that ``rot13()`` takes in a fixed-size 16-character message. As we discus
 A property that holds
 ---------------------
 
-A neat property of ROT13 is that it's *involutive*. That's a fancy way of saying that if you apply ROT13 to any message *m*, and then you apply ROT13 to the result, you'll get back your original *m*. This property makes ROT13 a suboptimal choice for guarding your deepest secrets, but a good choice for encrypting messages that you want to be decipherable with just a little bit of friction (like puzzle solutions).
+A neat property of ROT13 is that it's *involutive*. That's a fancy way of saying that if you apply ROT13 to any message *m*, and then you apply ROT13 to the result, you'll get back your original *m*. This property makes ROT13 a suboptimal choice for guarding your deepest secrets, but a great choice for encrypting messages that you want to be decipherable (like puzzle solutions).
 
 Let's use Crux to check that this involutive property holds for our implementation of ROT13. Below, we'll provide code for a Crux test that checks the property, run the test to see what output it produces, and then explain the structure of the test, line by line.
 
@@ -201,13 +201,13 @@ Now we can use this predicate as a precondition in a Crux test. The ``crucible_a
        crucible_assert!(rot13(buf) != buf);
    }
 
-When we run Crux on the file...
+Run Crux on the file again:
 
 .. code-block:: bash
 
    crux-mir-comp rot13.rs
 
-...we see that this time the property passes:
+We should see that the revised property holds:
 
 .. code-block:: text
 
@@ -234,4 +234,4 @@ For larger projects, you can use the command ``cargo crux-test`` instead of invo
 
    cargo crux-test --lib
 
-This command compiles the project with ``mir-json`` and runs all functions annotated with ``#[crux::test]``.
+This command compiles the project into a Crux-compatible format and runs all functions annotated with ``#[crux::test]``.
