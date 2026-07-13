@@ -1,14 +1,26 @@
-************************
-Crux Reference Manual
-************************
-
-Crux is a static simulator for programs.  It runs a set of test cases and
-attempts to prove that all assertions pass on all valid inputs.
+**************
+Crux Tutorial
+**************
 
 .. toctree::
-  :maxdepth: 5
+   :maxdepth: 2
 
-  installation
-  rust
-  llvm
+   introduction
+   installation
+   rust-quick-start
+   llvm-quick-start
+   symbolic-testing
+   adding-tests
+   running-crux
+   interpreting-results
+   interpreting-failures
+   coverage-analysis
+   profiling
+   limitations
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Appendices
+
+   comparison
+   building-from-source

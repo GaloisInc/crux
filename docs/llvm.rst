@@ -1,4 +1,0 @@
-Verifying LLVM Bitcode
-======================
-
-TODO
