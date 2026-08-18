@@ -19,9 +19,9 @@ A natural way to implement conditional select is with an ``if`` statement:
        if flag { a } else { b }
    }
 
-This function clearly implements the conditional select operation correctly. However, it is ill-suited to cryptographic applications because its branching structure may expose a *timing side-channel*. In other words, an attacker who can observe the function's timing behavior might be able to infer which branch was taken, thereby obtaining secret data. For example, if the attacker knows which branch was taken, they know whether the flag was ``true`` or ``false``, and the flag might be one bit of a secret key.
+This function implements the conditional select operation correctly. However, it is ill-suited to cryptographic applications because its branching structure may expose a *timing side-channel*. In other words, an attacker who can observe the function's timing behavior might be able to infer which branch was taken, thereby obtaining secret data. For example, if the attacker knows which branch was taken, they know whether the flag was ``true`` or ``false``, and the flag might be one bit of a secret key.
 
-For this reason, cryptographic engineers use a *constant-time* version of conditional select that always executes the same instructions regardless of the flag's value. The trick is to encode conditional behavior in terms of bitwise operations instead of using explicit branches.
+For this reason, cryptographic engineers use a *constant-time* version of conditional select that always executes the same instructions regardless of the flag's value. The trick is to implement conditional behavior with bitwise operations instead of explicit branches.
 
 There are several ways to define branchless conditional select; here's one version:
 
@@ -33,10 +33,58 @@ There are several ways to define branchless conditional select; here's one versi
        b ^ (mask & (a ^ b))
    }
 
-Informal equivalence proof
---------------------------
+This function is free of branching control flow. But does it compute the same result as the more intuitive version above? We can answer that question with Crux.
 
-In just a minute, we'll use Crux to verify that the constant-time function ``ct_select_opt()`` is extensionally equivalent to the reference implementation ``ct_select_ref()``. But first, here's an informal proof that the two functions compute the same result given equal inputs.
+Crux equivalence test
+---------------------
+
+Let's write a Crux test to check whether ``ct_select_ref()`` and ``ct_select_opt()`` are equivalent:
+
+.. code-block:: rust
+   :linenos:
+
+   use crucible::Symbolic;
+   use crucible::crucible_assert;
+
+   #[crux::test]
+   fn ct_select_equivalent() {
+       let flag: bool = bool::symbolic("flag");
+       let a: u32 = u32::symbolic("a");
+       let b: u32 = u32::symbolic("b");
+       crucible_assert!(ct_select_ref(flag, a, b) == ct_select_opt(flag, a, b));
+   }
+
+Lines 6--8 create symbolic variables that represent all possible values of the ``flag``, ``a``, and ``b`` function arguments. Line 9 calls the two functions on the symbolic arguments and asserts that the results are equal.
+
+You can paste this code into a file called ``ct_select.rs`` and run it as follows:
+
+.. code-block:: bash
+
+   crux-mir-comp ct_select.rs
+
+You should see:
+
+.. code-block:: text
+
+   test ct_select/...::ct_select_equivalent[0]: [Crux] Attempting to prove verification conditions.
+   ok
+
+   [Crux-MIR] ---- FINAL RESULTS ----
+   [Crux] Goal status:
+   [Crux]   Total: 1
+   [Crux]   Proved: 1
+   [Crux]   Disproved: 0
+   [Crux]   Incomplete: 0
+   [Crux]   Unknown: 0
+   [Crux] Overall status: Valid.
+
+Crux has proven that ``ct_select_opt()`` and ``ct_select_ref()`` produce identical results for all inputs. We can now use the optimized version with confidence that it computes the correct value.
+
+
+Aside: an informal equivalence proof
+------------------------------------
+
+Crux tells us that the two functions are equivalent, but not *why* they're equivalent. In case you're curious, here's an informal proof that the two functions compute the same result given equal inputs.
 
 Consider the two cases of the constant-time version:
 
@@ -50,7 +98,4 @@ So ``mask`` is either all ones or all zeros. Then:
 
 Therefore, ``ct_select_opt()`` returns ``a`` if ``flag`` is ``true`` and ``b`` otherwise, which is the same behavior as ``ct_select_ref()``.
 
-Crux equivalence test
----------------------
-
-TODO
+Even with this proof, there's still value in using Crux to check the equivalence. When doing such proofs by hand, it's easy to overlook small details or language-specific features that invalidate the result. In contrast, Crux's mechanized code analysis is exhaustive and aware of the target language's underlying semantics.
