@@ -48,9 +48,9 @@ Let's write a Crux test to check whether ``ct_select_ref()`` and ``ct_select_opt
 
    #[crux::test]
    fn ct_select_equivalent() {
-       let flag: bool = bool::symbolic("flag");
-       let a: u32 = u32::symbolic("a");
-       let b: u32 = u32::symbolic("b");
+       let flag = bool::symbolic("flag");
+       let a = u32::symbolic("a");
+       let b = u32::symbolic("b");
        crucible_assert!(ct_select_ref(flag, a, b) == ct_select_opt(flag, a, b));
    }
 
