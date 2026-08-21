@@ -8,6 +8,7 @@ Crux Tutorial
    introduction
    installation
    rust-quick-start
+   equivalence-checking
    llvm-quick-start
    symbolic-testing
    adding-tests
